@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    font-family: "Manrope", "Noto Sans Malayalam", sans-serif;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    background-image: 
+      radial-gradient(at 15% 15%, rgba(56, 189, 248, 0.04) 0px, transparent 40%),
+      radial-gradient(at 85% 85%, rgba(249, 115, 22, 0.04) 0px, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: #FFEDD5;
+    color: #0F172A;
+  }
+
+  /* Custom Font Families */
+  .font-manrope {
+    font-family: "Manrope", "Noto Sans Malayalam", sans-serif;
+  }
+  .font-roneva {
+    font-family: "Roneva Regular", "Roneva", "Manrope", sans-serif;
+  }
+  .font-dandy {
+    font-family: "DANDY JOKES Regular", "Dandy Jokes", "Manrope", sans-serif;
+  }
+
+  [lang="ml"],
+  .lang-ml {
+    font-family: "Noto Sans Malayalam", sans-serif;
+  }
+
+  h1[lang="ml"],
+  h2[lang="ml"],
+  h3[lang="ml"],
+  .prose-ml {
+    font-family: "Noto Serif Malayalam", serif;
+  }
+
+  :focus-visible {
+    outline: 2px solid #0284C7;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Custom scrollbar with subtle sky to orange hint */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #F8FAFC; }
+  ::-webkit-scrollbar-thumb { 
+    background: linear-gradient(180deg, #38BDF8 0%, #FB923C 100%); 
+    border-radius: 99px; 
+  }
+  ::-webkit-scrollbar-thumb:hover { 
+    background: linear-gradient(180deg, #0284C7 0%, #EA580C 100%); 
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Layout container */
+  .container-editorial {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-10;
+  }
+
+  /* Long-form reading area */
+  .reading-area {
+    @apply max-w-prose mx-auto text-lg leading-[1.9];
+    color: #334155;
+  }
+  .reading-area[lang="ml"] {
+    font-family: "Noto Serif Malayalam", serif;
+    line-height: 2.1;
+    font-size: 1.1rem;
+  }
+  .reading-area p  { @apply mb-6; }
+  .reading-area h2 {
+    font-family: Fraunces, "Noto Serif Malayalam", serif;
+    @apply text-3xl mt-12 mb-4;
+    color: #0F172A;
+  }
+  .reading-area blockquote {
+    border-left: 3px solid #F97316;
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: #64748B;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, rgba(254, 243, 199, 0.3), transparent);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0 8px 8px 0;
+  }
+  .reading-area a {
+    text-decoration: underline;
+    text-decoration-color: rgba(2, 132, 199, 0.5);
+    text-underline-offset: 4px;
+    transition: color 0.2s;
+  }
+  .reading-area a:hover {
+    text-decoration-color: #0284C7;
+    color: #0284C7;
+  }
+  .reading-area img { @apply my-8 w-full rounded-2xl shadow-md; }
+
+  /* Premium Glass Card */
+  .card-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-glass:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 20px 40px -12px rgba(2, 132, 199, 0.12), 0 8px 20px -6px rgba(234, 88, 12, 0.08);
+    transform: translateY(-3px);
+  }
+
+  /* Elevated card — modern with subtle dual sky/orange shadow */
+  .card {
+    background-color: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+  .card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 16px 36px -8px rgba(2, 132, 199, 0.12), 0 6px 16px -4px rgba(249, 115, 22, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+  }
+  .badge-sky {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+    background-color: #E0F2FE;
+    color: #0369A1;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .badge-orange {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+    background-color: #FFEDD5;
+    color: #C2410C;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+  }
+  .badge-moss {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+    background-color: #E0F2FE;
+    color: #0284C7;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .badge-gold {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+    background-color: #FFEDD5;
+    color: #C2410C;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+  }
+  .badge-slate {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm;
+    background-color: #F1F5F9;
+    color: #334155;
+    border: 1px solid #E2E8F0;
+  }
+
+  /* Section divider with subtle glowing gradient */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.4) 30%, rgba(249, 115, 22, 0.4) 70%, transparent 100%);
+  }
+
+  /* Text gradient for accents */
+  .text-gradient-sky-orange {
+    background: linear-gradient(135deg, #0284C7 0%, #38BDF8 35%, #F97316 70%, #EA580C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-sky {
+    background: linear-gradient(135deg, #0369A1 0%, #0284C7 50%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-orange {
+    background: linear-gradient(135deg, #C2410C 0%, #EA580C 50%, #FB923C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-moss {
+    background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #EA580C 0%, #F97316 60%, #FB923C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@layer utilities {
+  .transition-editorial {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-duration: 500ms;
+  }
+
+  /* Infinite Marquee */
+  @keyframes marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: marquee-scroll 32s linear infinite;
+  }
+
+  .animate-marquee:hover,
+  .animate-marquee-paused {
+    animation-play-state: paused;
+  }
+
+  .marquee-mask {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  /* Animated Text & Effects */
+  @keyframes text-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-text-shimmer {
+    background: linear-gradient(90deg, #0284C7 0%, #F97316 30%, #38BDF8 60%, #EA580C 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 5s linear infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50% { opacity: 0.75; transform: scale(1.08); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+}

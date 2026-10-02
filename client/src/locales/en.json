@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "works": "Works",
+    "stories": "Stories",
+    "videos": "Videos",
+    "books": "Books",
+    "audio": "Audio",
+    "contact": "Contact"
+  },
+  "hero": {
+    "kicker": "Writer · Scriptwriter · Storyteller · Creator · Music",
+    "exploreWork": "Explore My Work",
+    "watchYoutube": "Watch on YouTube"
+  },
+  "home": {
+    "introTitle": "Who is Rajendran?",
+    "featuredTitle": "Featured Work",
+    "latestStoryTitle": "Latest Story",
+    "watchTitle": "Visuals & Cinema",
+    "listenTitle": "Voices & Audio",
+    "readTitle": "Stories & Prose",
+    "selectedWorksTitle": "Selected Works",
+    "connectTitle": "Let's Connect"
+  },
+  "common": {
+    "readMore": "Read more",
+    "watchNow": "Watch now",
+    "viewAll": "View all",
+    "loading": "Loading",
+    "empty": "Nothing here yet",
+    "minRead": "min read",
+    "back": "Back"
+  },
+  "footer": {
+    "tagline": "Writer · Scriptwriter · Storyteller · Creator",
+    "rights": "All rights reserved."
+  }
+}
