@@ -14,6 +14,7 @@ import VideoDetail from "./pages/VideoDetail";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import AudioPage from "./pages/AudioPage";
+import HoroscopePage from "./pages/HoroscopePage";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/videos/:id" element={<VideoDetail />} />
           <Route path="/audio" element={<AudioPage />} />
           <Route path="/books" element={<Works />} />
+          <Route path="/horoscope" element={<HoroscopePage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>

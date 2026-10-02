@@ -9,6 +9,7 @@ import uploadRoutes from "./uploadRoutes";
 import engagementRoutes from "./engagementRoutes";
 import audioRoutes from "./audioRoutes";
 import contactRoutes from "./contactRoutes";
+import horoscopeRoutes from "./horoscopeRoutes";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use("/auth", authRoutes);
 router.use("/stories", storyRoutes);
 router.use("/videos", videoRoutes);
 router.use("/audio", audioRoutes);
+router.use("/horoscope", horoscopeRoutes);
 router.use("/contact", contactRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/youtube", youtubeRoutes);

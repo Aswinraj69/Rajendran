@@ -22,7 +22,7 @@ export function SectionHeading({
   light = false,
 }: SectionHeadingProps) {
   return (
-    <div className="mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-sky-100/80 pb-7">
+    <div className="mb-8 sm:mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 border-b border-sky-100/80 pb-5 sm:pb-7">
       <div className="max-w-2xl">
         {(badge || eyebrow) && (
           <div className="mb-3 flex items-center gap-2.5 flex-wrap">

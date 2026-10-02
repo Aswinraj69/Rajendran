@@ -9,9 +9,10 @@ const navLinks: { to: string; key: keyof ReturnType<typeof useLanguage>["t"]["na
   { to: "/about",   key: "about" },
   { to: "/works",   key: "works" },
   { to: "/stories", key: "stories" },
-  { to: "/videos",  key: "videos" },
-  { to: "/audio",   key: "audio" },
-  { to: "/contact", key: "contact" },
+  { to: "/videos",    key: "videos" },
+  { to: "/audio",     key: "audio" },
+  { to: "/horoscope", key: "horoscope" },
+  { to: "/contact",   key: "contact" },
 ];
 
 export function Navbar() {

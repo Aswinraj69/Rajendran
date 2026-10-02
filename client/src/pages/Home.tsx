@@ -18,6 +18,8 @@ import { AnimatedText } from "../components/ui/AnimatedText";
 import { CascadingText } from "../components/ui/CascadingText";
 import { resolveMediaUrl } from "../utils/media";
 import PortfolioHero from "../components/ui/portfolio-hero";
+import { MarketTickerBar } from "../components/ui/MarketTickerBar";
+import { HoroscopeTeaserBanner } from "../components/ui/HoroscopeTeaserBanner";
 
 /* ── animation helpers ── */
 const fadeUp = (delay = 0) => ({
@@ -72,6 +74,11 @@ export default function Home() {
         signature="RK"
       />
 
+      {/* ══════════════════════════════════════════
+          LIVE BULLION & MARKET TICKER BAR
+          ══════════════════════════════════════════ */}
+      <MarketTickerBar />
+
       {/* ═════════════════════════════════════════════════════════════════
           ABOUT THE CREATOR — Clean Editorial Glass Section
           ═════════════════════════════════════════════════════════════════ */}
@@ -89,7 +96,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-5"
             >
@@ -146,7 +153,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-7 space-y-6"
             >
@@ -291,6 +298,11 @@ export default function Home() {
               {stories.map((s, i) => <StoryCard key={s._id} story={s} index={i} />)}
             </div>
           )}
+
+          {/* ══════════════════════════════════════════
+              HOROSCOPE & ASTROLOGY TEASER BANNER
+              ══════════════════════════════════════════ */}
+          <HoroscopeTeaserBanner />
         </div>
       </section>
 
@@ -347,7 +359,7 @@ export default function Home() {
                     key={audio._id}
                     initial={{ opacity: 0, y: 25 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                     onClick={() => {
                       if (isThisActive) {
@@ -476,7 +488,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className="mb-5 inline-block rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-sky-300">

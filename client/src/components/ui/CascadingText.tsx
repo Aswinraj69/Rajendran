@@ -21,7 +21,7 @@ export function CascadingText({
   direction = "up",
 }: CascadingTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-40px" });
+  const isInView = useInView(containerRef, { once: true, margin: "0px", amount: 0.05 });
 
   const fontClass =
     fontFamily === "roneva"
