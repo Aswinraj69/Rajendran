@@ -15,10 +15,33 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(
   cors({
-    origin: env.clientUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      // List of explicitly allowed domains
+      const allowed = [
+        env.clientUrl,
+        "https://rajendrankaipallil.com",
+        "https://www.rajendrankaipallil.com",
+        "http://localhost:5173",
+        "http://localhost:3000",
+      ];
+
+      if (
+        allowed.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        origin.includes("rajendrankaipallil.com") ||
+        origin.includes("localhost")
+      ) {
+        return callback(null, true);
+      }
+
+      // Default allow with origin reflect for flexible hosting
+      return callback(null, true);
+    },
     credentials: true,
   })
 );

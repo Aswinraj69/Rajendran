@@ -36,7 +36,11 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const logout = asyncHandler(async (_req: Request, res: Response) => {
-  res.clearCookie(env.cookieName);
+  res.clearCookie(env.cookieName, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
   res.json({ success: true, message: "Logged out" });
 });
 
