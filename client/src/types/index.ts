@@ -79,6 +79,7 @@ export interface AudioTrack {
   category: AudioCategory;
   duration?: number;
   narrator?: string;
+  originalName?: string;
   featured: boolean;
   playsCount?: number;
   likesCount?: number;

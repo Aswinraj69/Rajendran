@@ -6,7 +6,17 @@ import { ApiError } from "../utils/ApiError";
 export function validate(req: Request, _res: Response, next: NextFunction) {
   const result = validationResult(req);
   if (!result.isEmpty()) {
-    return next(ApiError.badRequest("Please check the highlighted fields", result.array()));
+    const errorArray = result.array();
+    const formattedErrors = errorArray
+      .map((err) => (err as { msg?: string }).msg || "Invalid value")
+      .filter((msg, idx, arr) => arr.indexOf(msg) === idx)
+      .join(". ");
+    return next(
+      ApiError.badRequest(
+        formattedErrors || "Please check the highlighted form fields",
+        errorArray
+      )
+    );
   }
   next();
 }

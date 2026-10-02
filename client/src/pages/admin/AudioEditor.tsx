@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Play,
   Pause,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import { createAudioTrack, getAudio, updateAudioTrack, uploadAudioFile } from "../../api/audio";
 import { uploadThumbnail } from "../../api/upload";
@@ -34,9 +36,9 @@ const emptyForm = {
   audioUrl: "",
   coverImage: "",
   category: "voice" as AudioCategory,
-  narrator: "Rajendran Kaippallil",
   duration: 0,
   featured: false,
+  narrator: "Rajendran Kaippallil",
 };
 
 export default function AudioEditor() {
@@ -45,23 +47,30 @@ export default function AudioEditor() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState(emptyForm);
+  const [audioUploading, setAudioUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!isNew);
-
-  // Audio upload state
-  const [audioUploading, setAudioUploading] = useState(false);
-  const [audioFileName, setAudioFileName] = useState("");
   const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
+  const [audioFileName, setAudioFileName] = useState("");
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [errors, setErrors] = useState<{ title?: string; audio?: string; cover?: string; general?: string }>({});
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Cover image upload state
-  const [coverUploading, setCoverUploading] = useState(false);
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
 
+  /* ── Load existing track for editing ── */
   useEffect(() => {
     if (isNew) return;
     getAudio(id!)
-      .then(({ data }) => {
+      .then((res) => {
+        const data = res.data;
         setForm({
           titleMalayalam: data.titleMalayalam || "",
           titleEnglish: data.titleEnglish || "",
@@ -69,32 +78,47 @@ export default function AudioEditor() {
           descriptionEnglish: data.descriptionEnglish || "",
           audioUrl: data.audioUrl || "",
           coverImage: data.coverImage || "",
-          category: data.category,
-          narrator: data.narrator || "Rajendran Kaippallil",
+          category: data.category || "voice",
           duration: data.duration || 0,
-          featured: data.featured,
+          featured: data.featured || false,
+          narrator: data.narrator || "Rajendran Kaippallil",
         });
-        setAudioFileName(data.audioUrl ? data.audioUrl.split("/").pop() || "" : "");
-        setAudioPreviewUrl(data.audioUrl || "");
+        if (data.audioUrl) {
+          setAudioPreviewUrl(resolveMediaUrl(data.audioUrl));
+          setAudioFileName(data.originalName || data.audioUrl.split("/").pop() || "Audio File");
+        }
       })
       .catch(() => toast.error("Failed to load audio track"))
       .finally(() => setLoading(false));
   }, [id, isNew]);
 
-  /* ── Audio file upload ── */
+  /* ── Audio file upload with validation ── */
   async function handleAudioFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg", "audio/aac", "audio/m4a", "audio/x-m4a"];
-    if (!allowedTypes.some((t) => file.type.startsWith("audio/"))) {
-      toast.error("Please select an audio file (MP3, WAV, OGG, AAC, M4A)");
+    // Check type
+    const isAudio =
+      file.type.startsWith("audio/") ||
+      /\.(mp3|wav|ogg|aac|m4a|flac)$/i.test(file.name);
+
+    if (!isAudio) {
+      const msg = `Unsupported audio format "${file.name.split(".").pop() || "unknown"}". Allowed: MP3, WAV, OGG, AAC, M4A, FLAC.`;
+      setErrors((prev) => ({ ...prev, audio: msg }));
+      toast.error(msg);
       return;
     }
+
+    // Check size (100MB max)
     if (file.size > 100 * 1024 * 1024) {
-      toast.error("Audio file must be under 100MB");
+      const actualSize = formatFileSize(file.size);
+      const msg = `Audio file too large (${actualSize}). Maximum allowed size is 100MB.`;
+      setErrors((prev) => ({ ...prev, audio: msg }));
+      toast.error(msg);
       return;
     }
+
+    setErrors((prev) => ({ ...prev, audio: undefined }));
 
     // Local preview while uploading
     const localUrl = URL.createObjectURL(file);
@@ -105,8 +129,8 @@ export default function AudioEditor() {
     try {
       const res = await uploadAudioFile(file);
       setForm((f) => ({ ...f, audioUrl: res.url }));
-      setAudioPreviewUrl(res.url);
-      toast.success("Audio uploaded successfully!");
+      setAudioPreviewUrl(resolveMediaUrl(res.url));
+      toast.success("Audio file uploaded successfully!");
 
       // Get duration from audio element
       const tempAudio = new Audio(localUrl);
@@ -115,8 +139,10 @@ export default function AudioEditor() {
           setForm((f) => ({ ...f, duration: Math.round(tempAudio.duration) }));
         }
       });
-    } catch {
-      toast.error("Failed to upload audio file");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to upload audio file";
+      setErrors((prev) => ({ ...prev, audio: msg }));
+      toast.error(msg);
       setAudioPreviewUrl("");
       setAudioFileName("");
     } finally {
@@ -124,22 +150,42 @@ export default function AudioEditor() {
     }
   }
 
-  /* ── Cover image upload ── */
+  /* ── Cover image upload with validation ── */
   async function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
+
+    const isImage =
+      file.type.startsWith("image/") ||
+      /\.(jpe?g|png|webp|gif|avif)$/i.test(file.name);
+
+    if (!isImage) {
+      const msg = `Unsupported image format "${file.name.split(".").pop() || "unknown"}". Allowed: JPG, PNG, WEBP, GIF.`;
+      setErrors((prev) => ({ ...prev, cover: msg }));
+      toast.error(msg);
       return;
     }
 
+    // Check size (25MB max)
+    if (file.size > 25 * 1024 * 1024) {
+      const actualSize = formatFileSize(file.size);
+      const msg = `Cover image is too large (${actualSize}). Maximum allowed is 25MB.`;
+      setErrors((prev) => ({ ...prev, cover: msg }));
+      toast.error(msg);
+      return;
+    }
+
+    setErrors((prev) => ({ ...prev, cover: undefined }));
     setCoverUploading(true);
+
     try {
       const res = await uploadThumbnail(file);
       setForm((f) => ({ ...f, coverImage: res.url }));
-      toast.success("Cover image uploaded!");
-    } catch {
-      toast.error("Failed to upload cover image");
+      toast.success("Cover image uploaded successfully!");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to upload cover image";
+      setErrors((prev) => ({ ...prev, cover: msg }));
+      toast.error(msg);
     } finally {
       setCoverUploading(false);
     }
@@ -161,27 +207,46 @@ export default function AudioEditor() {
     }
   }
 
+  const validateForm = (): boolean => {
+    const newErrors: { title?: string; audio?: string; general?: string } = {};
+
+    if (!form.titleEnglish.trim() && !form.titleMalayalam.trim()) {
+      newErrors.title = "Please provide an English or Malayalam title.";
+    }
+
+    if (!form.audioUrl.trim()) {
+      newErrors.audio = "Please upload an audio file or enter an audio track URL.";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.values(newErrors)[0];
+      toast.error(firstError);
+      return false;
+    }
+
+    return true;
+  };
+
   /* ── Save ── */
   async function handleSave() {
-    if (!form.titleEnglish.trim() && !form.titleMalayalam.trim()) {
-      return toast.error("At least one title (English or Malayalam) is required");
-    }
-    if (!form.audioUrl.trim()) {
-      return toast.error("Please upload an audio file");
-    }
+    if (!validateForm()) return;
 
     setSaving(true);
     try {
       if (isNew) {
         await createAudioTrack(form);
-        toast.success("Audio track added!");
+        toast.success("Audio track created successfully!");
       } else {
         await updateAudioTrack(id!, form);
-        toast.success("Audio track updated!");
+        toast.success("Audio track updated successfully!");
       }
       navigate("/admin/audio");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save");
+      const msg = err instanceof Error ? err.message : "Failed to save audio track";
+      setErrors((prev) => ({ ...prev, general: msg }));
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -202,8 +267,26 @@ export default function AudioEditor() {
         {isNew ? "Add Audio Track" : "Edit Audio Track"}
       </h1>
       <p className="mt-1 text-xs text-ink/40">
-        Upload MP3 voice recordings, songs, poetry, or stories that visitors can play on the website.
+        Upload MP3 voice recordings, songs, poetry, or stories that visitors can stream on the website.
       </p>
+
+      {/* Global Validation Error */}
+      {errors.general && (
+        <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
+          <AlertCircle className="h-4 w-4 shrink-0 text-red-500 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold">Validation Required</p>
+            <p className="mt-0.5">{errors.general}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrors((prev) => ({ ...prev, general: undefined }))}
+            className="text-red-400 hover:text-red-700"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_300px]">
 
@@ -211,10 +294,19 @@ export default function AudioEditor() {
         <div className="space-y-6">
 
           {/* Audio File Upload */}
-          <div className="rounded-lg border-2 border-dashed border-mist bg-paper-warm p-6">
-            <p className="mb-3 text-sm font-semibold text-ink">
+          <div className={`rounded-xl border-2 border-dashed p-6 transition ${
+            errors.audio ? "border-red-400 bg-red-50/20" : "border-mist bg-paper-warm"
+          }`}>
+            <p className="mb-2 text-sm font-semibold text-ink">
               Audio File <span className="text-rust">*</span>
             </p>
+
+            {errors.audio && (
+              <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                {errors.audio}
+              </p>
+            )}
 
             {/* Upload area */}
             <label
@@ -251,7 +343,7 @@ export default function AudioEditor() {
             <input
               id="audio-file-input"
               type="file"
-              accept="audio/*,.mp3,.wav,.ogg,.aac,.m4a"
+              accept="audio/*,.mp3,.wav,.ogg,.aac,.m4a,.flac"
               onChange={handleAudioFileChange}
               className="hidden"
             />
@@ -286,33 +378,50 @@ export default function AudioEditor() {
           {/* Bilingual Titles */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm text-ink/70">
-                Title (English)
+              <label className="mb-1 block text-sm font-medium text-ink/70">
+                Title (English) {!form.titleMalayalam && <span className="text-red-500">*</span>}
               </label>
               <input
                 value={form.titleEnglish}
-                onChange={(e) => setForm({ ...form, titleEnglish: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, titleEnglish: e.target.value });
+                  if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
+                }}
                 placeholder="e.g. Voice of the River"
-                className="w-full border border-mist bg-white px-3 py-2 text-sm focus-visible:border-gold"
+                className={`w-full border bg-white px-3 py-2 text-sm focus-visible:outline-none transition ${
+                  errors.title ? "border-red-400 bg-red-50/20 focus-visible:border-red-500" : "border-mist focus-visible:border-gold"
+                }`}
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-ink/70">
-                Title (Malayalam)
+              <label className="mb-1 block text-sm font-medium text-ink/70">
+                Title (Malayalam) {!form.titleEnglish && <span className="text-red-500">*</span>}
               </label>
               <input
                 value={form.titleMalayalam}
-                onChange={(e) => setForm({ ...form, titleMalayalam: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, titleMalayalam: e.target.value });
+                  if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
+                }}
                 placeholder="e.g. നദിയുടെ ശബ്ദം"
-                className="w-full border border-mist bg-white px-3 py-2 text-sm focus-visible:border-gold"
+                className={`w-full border bg-white px-3 py-2 text-sm focus-visible:outline-none transition ${
+                  errors.title ? "border-red-400 bg-red-50/20 focus-visible:border-red-500" : "border-mist focus-visible:border-gold"
+                }`}
               />
             </div>
           </div>
 
+          {errors.title && (
+            <p className="text-xs text-red-600 -mt-4 flex items-center gap-1 font-medium">
+              <AlertCircle className="h-3.5 w-3.5" />
+              {errors.title}
+            </p>
+          )}
+
           {/* Bilingual Descriptions */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm text-ink/70">
+              <label className="mb-1 block text-sm font-medium text-ink/70">
                 Description (English)
               </label>
               <textarea
@@ -324,7 +433,7 @@ export default function AudioEditor() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-ink/70">
+              <label className="mb-1 block text-sm font-medium text-ink/70">
                 Description (Malayalam)
               </label>
               <textarea
@@ -339,7 +448,7 @@ export default function AudioEditor() {
 
           {/* Narrator */}
           <div>
-            <label className="mb-1 block text-sm text-ink/70">Narrator / Artist</label>
+            <label className="mb-1 block text-sm font-medium text-ink/70">Narrator / Artist</label>
             <input
               value={form.narrator}
               onChange={(e) => setForm({ ...form, narrator: e.target.value })}
@@ -354,7 +463,14 @@ export default function AudioEditor() {
 
           {/* Cover Image */}
           <div className="border border-mist bg-white p-4">
-            <p className="mb-3 text-sm font-semibold text-ink">Cover Image</p>
+            <p className="mb-3 text-sm font-semibold text-ink">Cover Image (Optional)</p>
+
+            {errors.cover && (
+              <p className="mb-2 text-xs text-red-600 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {errors.cover}
+              </p>
+            )}
 
             <label
               htmlFor="cover-image-input"
@@ -385,12 +501,12 @@ export default function AudioEditor() {
             <input
               id="cover-image-input"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
               onChange={handleCoverImageChange}
               className="hidden"
             />
-            <p className="mt-2 text-[10px] text-ink/30">
-              Recommended: 500×500px square image
+            <p className="mt-2 text-[10px] text-ink/40">
+              JPG, PNG, WEBP up to 25MB · Recommended 500×500px
             </p>
           </div>
 
@@ -400,7 +516,7 @@ export default function AudioEditor() {
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value as AudioCategory })}
-              className="w-full border border-mist bg-white px-3 py-2 text-sm"
+              className="w-full border border-mist bg-white px-3 py-2 text-sm capitalize"
             >
               {categories.map((c) => (
                 <option key={c} value={c}>
