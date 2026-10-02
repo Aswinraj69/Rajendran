@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, Search, Music, Play, Heart } from "lucide-react";
 import { listAudio, deleteAudioTrack } from "../../api/audio";
 import { AudioTrack } from "../../types";
+import { resolveMediaUrl } from "../../utils/media";
 
 export default function AudioList() {
   const [tracks, setTracks] = useState<AudioTrack[]>([]);
@@ -82,7 +83,7 @@ export default function AudioList() {
               {/* Cover image or music icon */}
               {track.coverImage ? (
                 <img
-                  src={track.coverImage}
+                  src={resolveMediaUrl(track.coverImage)}
                   alt=""
                   className="h-10 w-10 rounded object-cover"
                 />

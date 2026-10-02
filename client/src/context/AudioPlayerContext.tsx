@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AudioTrack } from "../types";
 import { incrementAudioPlays } from "../api/audio";
+import { resolveMediaUrl } from "../utils/media";
 
 interface AudioPlayerContextType {
   currentTrack: AudioTrack | null;
@@ -98,9 +99,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     }
 
     setCurrentTrack(track);
-    audio.src = track.audioUrl.startsWith("http")
-      ? track.audioUrl
-      : `${window.location.origin}${track.audioUrl}`;
+    audio.src = resolveMediaUrl(track.audioUrl);
 
     audio.volume = isMuted ? 0 : volume;
     audio.playbackRate = playbackRate;

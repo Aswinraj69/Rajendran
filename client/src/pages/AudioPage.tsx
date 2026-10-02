@@ -18,6 +18,7 @@ import { AudioTrack, AudioCategory } from "../types";
 import { useAudioPlayer } from "../context/AudioPlayerContext";
 import { useLanguage } from "../context/LanguageContext";
 import { AnimatedText } from "../components/ui/AnimatedText";
+import { resolveMediaUrl } from "../utils/media";
 
 /* ── helpers ── */
 function formatDuration(secs: number) {
@@ -73,7 +74,7 @@ function AudioCard({
   const isActive = currentTrack?._id === track._id;
   const title = pick(track.titleMalayalam, track.titleEnglish) || "Untitled";
   const desc = pick(track.descriptionMalayalam, track.descriptionEnglish);
-  const cover = track.coverImage || "/logo.jpg";
+  const cover = resolveMediaUrl(track.coverImage || "/logo.jpg");
 
   function handlePlay() {
     if (isActive) {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, BookOpen } from "lucide-react";
 import { listAdminStories, deleteStory } from "../../api/stories";
 import { Story } from "../../types";
+import { resolveMediaUrl } from "../../utils/media";
 
 export default function StoriesList() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -77,12 +78,25 @@ export default function StoriesList() {
         )}
         {stories.map((story) => (
           <div key={story._id} className="flex items-center justify-between gap-4 px-4 py-3">
-            <div>
-              <p className="text-sm text-ink">{story.titleEnglish || story.titleMalayalam}</p>
-              <p className="mt-0.5 text-xs uppercase tracking-wide text-ink/40">
-                {story.category} · {story.status}
-                {story.featured ? " · Featured" : ""}
-              </p>
+            <div className="flex items-center gap-3">
+              {story.coverImage ? (
+                <img
+                  src={resolveMediaUrl(story.coverImage)}
+                  alt=""
+                  className="h-12 w-12 rounded object-cover border border-mist"
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded bg-sand/30 border border-mist text-ink/40">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium text-ink">{story.titleEnglish || story.titleMalayalam}</p>
+                <p className="mt-0.5 text-xs uppercase tracking-wide text-ink/40">
+                  {story.category} · {story.status}
+                  {story.featured ? " · Featured" : ""}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Link

@@ -14,6 +14,7 @@ import {
 import { createAudioTrack, getAudio, updateAudioTrack, uploadAudioFile } from "../../api/audio";
 import { uploadThumbnail } from "../../api/upload";
 import { AudioCategory } from "../../types";
+import { resolveMediaUrl } from "../../utils/media";
 
 const categories: AudioCategory[] = [
   "voice",
@@ -366,7 +367,7 @@ export default function AudioEditor() {
               ) : form.coverImage ? (
                 <div className="relative">
                   <img
-                    src={form.coverImage}
+                    src={resolveMediaUrl(form.coverImage)}
                     alt="Cover"
                     className="aspect-square w-full object-cover"
                   />

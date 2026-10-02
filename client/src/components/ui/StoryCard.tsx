@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Story } from "../../types";
 import { useLanguage } from "../../context/LanguageContext";
+import { resolveMediaUrl } from "../../utils/media";
 import { ArrowRight } from "lucide-react";
 
 export function StoryCard({ story, index = 0 }: { story: Story; index?: number }) {
@@ -26,7 +27,7 @@ export function StoryCard({ story, index = 0 }: { story: Story; index?: number }
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-paper-ice border border-sky-100/60">
           {story.coverImage ? (
             <img
-              src={story.coverImage}
+              src={resolveMediaUrl(story.coverImage)}
               alt={title}
               loading="lazy"
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"

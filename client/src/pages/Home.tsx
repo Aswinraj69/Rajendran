@@ -16,6 +16,7 @@ import { CardSkeletonGrid, EmptyState } from "../components/ui/Skeletons";
 import { YouTubeMarquee } from "../components/ui/YouTubeMarquee";
 import { AnimatedText } from "../components/ui/AnimatedText";
 import { CascadingText } from "../components/ui/CascadingText";
+import { resolveMediaUrl } from "../utils/media";
 import PortfolioHero from "../components/ui/portfolio-hero";
 
 /* ── animation helpers ── */
@@ -380,7 +381,7 @@ export default function Home() {
                       {/* Artwork & Play Trigger */}
                       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-paper-ice mb-5 border border-sky-100/70 shadow-xs">
                         <img
-                          src={audio.coverImage || "/logo.jpg"}
+                          src={resolveMediaUrl(audio.coverImage || "/logo.jpg")}
                           alt={title}
                           className={`h-full w-full object-cover transition-transform duration-700 ${isThisActive && isPlaying ? "scale-105" : "group-hover:scale-105"
                             }`}

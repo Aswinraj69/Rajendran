@@ -6,6 +6,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { estimateReadingMinutes } from "../utils/i18n";
 import { StoryCard } from "../components/ui/StoryCard";
 import { StoryEngagement } from "../components/ui/StoryEngagement";
+import { resolveMediaUrl } from "../utils/media";
 import { ArrowLeft, Clock, Calendar, Share2 } from "lucide-react";
 
 export default function StoryDetail() {
@@ -99,7 +100,7 @@ export default function StoryDetail() {
       {story.coverImage && (
         <div className="container-editorial mt-8">
           <div className="aspect-[16/7] w-full overflow-hidden rounded-2xl bg-paper-warm shadow-card">
-            <img src={story.coverImage} alt={title} className="h-full w-full object-cover" />
+            <img src={resolveMediaUrl(story.coverImage)} alt={title} className="h-full w-full object-cover" />
           </div>
         </div>
       )}

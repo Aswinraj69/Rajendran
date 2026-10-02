@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useAudioPlayer } from "../../context/AudioPlayerContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { resolveMediaUrl } from "../../utils/media";
 import { likeAudioTrack } from "../../api/audio";
 import toast from "react-hot-toast";
 
@@ -72,7 +73,7 @@ export function SpotifyAudioPlayer() {
 
   const title = pick(currentTrack.titleMalayalam, currentTrack.titleEnglish) || "Audio Track";
   const description = pick(currentTrack.descriptionMalayalam, currentTrack.descriptionEnglish);
-  const cover = currentTrack.coverImage || "/logo.jpg";
+  const cover = resolveMediaUrl(currentTrack.coverImage || "/logo.jpg");
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const handleLike = async () => {

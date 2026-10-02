@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Search, RefreshCw, Youtube } from "lucide-react";
 import { listAdminVideos, deleteVideo } from "../../api/videos";
 import { syncYouTubeChannel } from "../../api/youtube";
 import { Video } from "../../types";
+import { resolveMediaUrl } from "../../utils/media";
 
 export default function VideosList() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -95,7 +96,7 @@ export default function VideosList() {
           <div key={video._id} className="flex items-center justify-between gap-4 px-4 py-3">
             <div className="flex items-center gap-3">
               {video.thumbnail && (
-                <img src={video.thumbnail} alt="" className="h-10 w-16 object-cover" />
+                <img src={resolveMediaUrl(video.thumbnail)} alt="" className="h-10 w-16 object-cover" />
               )}
               <div>
                 <p className="text-sm text-ink">{video.title}</p>

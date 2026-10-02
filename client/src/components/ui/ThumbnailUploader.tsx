@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { UploadCloud, Image as ImageIcon, X, Loader2, Link2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { uploadThumbnail } from "../../api/upload";
+import { resolveMediaUrl } from "../../utils/media";
 
 interface ThumbnailUploaderProps {
   value: string;
@@ -94,7 +95,7 @@ export function ThumbnailUploader({
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative h-28 w-44 shrink-0 overflow-hidden rounded-lg border border-mist/80 bg-paper-sand shadow-inner">
               <img
-                src={value}
+                src={resolveMediaUrl(value)}
                 alt="Story Thumbnail Preview"
                 className="h-full w-full object-cover"
                 onError={(e) => {

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { Video } from "../../types";
+import { resolveMediaUrl } from "../../utils/media";
 
 export function VideoCard({ video, index = 0 }: { video: Video; index?: number; dark?: boolean }) {
   return (
@@ -21,7 +22,7 @@ export function VideoCard({ video, index = 0 }: { video: Video; index?: number; 
         <div className="relative aspect-video overflow-hidden rounded-xl bg-paper-ice border border-sky-100/60">
           {video.thumbnail && (
             <img
-              src={video.thumbnail}
+              src={resolveMediaUrl(video.thumbnail)}
               alt={video.title}
               loading="lazy"
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
