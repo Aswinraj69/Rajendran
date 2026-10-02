@@ -137,6 +137,9 @@ export function SpotifyAudioPlayer() {
                   <img
                     src={cover}
                     alt={title}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/logo.jpg";
+                    }}
                     className={`h-full w-full object-cover transition-transform duration-700 ${
                       isPlaying ? "scale-105" : ""
                     }`}
@@ -257,6 +260,9 @@ export function SpotifyAudioPlayer() {
                   <img
                     src={cover}
                     alt={title}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/logo.jpg";
+                    }}
                     className={`h-full w-full object-cover transition-transform duration-700 ${
                       isPlaying ? "scale-105" : ""
                     }`}

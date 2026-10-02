@@ -83,6 +83,9 @@ export default function StoriesList() {
                 <img
                   src={resolveMediaUrl(story.coverImage)}
                   alt=""
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/cover-about.jpg";
+                  }}
                   className="h-12 w-12 rounded object-cover border border-mist"
                 />
               ) : (

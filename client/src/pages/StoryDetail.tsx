@@ -100,7 +100,14 @@ export default function StoryDetail() {
       {story.coverImage && (
         <div className="container-editorial mt-8">
           <div className="aspect-[16/7] w-full overflow-hidden rounded-2xl bg-paper-warm shadow-card">
-            <img src={resolveMediaUrl(story.coverImage)} alt={title} className="h-full w-full object-cover" />
+            <img
+              src={resolveMediaUrl(story.coverImage)}
+              alt={title}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/cover-about.jpg";
+              }}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       )}

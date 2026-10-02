@@ -395,6 +395,9 @@ export default function Home() {
                         <img
                           src={resolveMediaUrl(audio.coverImage || "/logo.jpg")}
                           alt={title}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/logo.jpg";
+                          }}
                           className={`h-full w-full object-cover transition-transform duration-700 ${isThisActive && isPlaying ? "scale-105" : "group-hover:scale-105"
                             }`}
                         />

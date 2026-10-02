@@ -99,6 +99,9 @@ function AudioCard({
         <img
           src={cover}
           alt={title}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/logo.jpg";
+          }}
           className={`h-full w-full object-cover transition-transform duration-700 ${
             isActive && isPlaying ? "scale-105" : "scale-100 group-hover:scale-105"
           }`}

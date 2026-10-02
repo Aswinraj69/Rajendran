@@ -30,6 +30,9 @@ export function StoryCard({ story, index = 0 }: { story: Story; index?: number }
               src={resolveMediaUrl(story.coverImage)}
               alt={title}
               loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/cover-about.jpg";
+              }}
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
             />
           ) : (

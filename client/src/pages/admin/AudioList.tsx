@@ -85,6 +85,9 @@ export default function AudioList() {
                 <img
                   src={resolveMediaUrl(track.coverImage)}
                   alt=""
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/logo.jpg";
+                  }}
                   className="h-10 w-10 rounded object-cover"
                 />
               ) : (

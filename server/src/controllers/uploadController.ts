@@ -12,7 +12,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-// Multer storage configuration
+// Multer storage configuration for Images
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, UPLOAD_DIR);
@@ -61,13 +61,22 @@ export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
 
   const localUrl = `/uploads/${req.file.filename}`;
 
-  // If Cloudinary is configured, upload there as primary
+  // If Cloudinary is configured, upload to Cloudinary for permanent cloud storage
   if (isCloudinaryConfigured()) {
     try {
       const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "rajendran-kaipallil/stories",
+        folder: "rajendran-kaipallil/images",
         resource_type: "image",
       });
+
+      // Cleanup local temp file
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+      } catch {
+        // ignore cleanup error
+      }
 
       return res.json({
         success: true,
@@ -75,8 +84,9 @@ export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
         publicId: result.public_id,
         filename: req.file.filename,
       });
-    } catch {
-      // Fallback to local URL if Cloudinary upload fails
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn("[upload] Cloudinary upload error, falling back to local URL:", err);
       return res.json({
         success: true,
         url: localUrl,
@@ -85,7 +95,7 @@ export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
-  // Return local static URL
+  // Fallback to local static URL
   return res.json({
     success: true,
     url: localUrl,
@@ -120,7 +130,7 @@ const audioFileFilter = (
   if (file.mimetype.startsWith("audio/") || allowedExts.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error("Only audio files (MP3, WAV, M4A, AAC, OGG) are allowed"));
+    cb(new Error("Only audio files (MP3, WAV, M4A, AAC, OGG, FLAC) are allowed"));
   }
 };
 
@@ -136,6 +146,44 @@ export const uploadAudio = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const localUrl = `/uploads/${req.file.filename}`;
+
+  // If Cloudinary is configured, upload to Cloudinary for permanent audio cloud storage
+  if (isCloudinaryConfigured()) {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "rajendran-kaipallil/audio",
+        resource_type: "auto", // handles audio files properly in Cloudinary
+      });
+
+      // Cleanup local temp file
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+      } catch {
+        // ignore cleanup error
+      }
+
+      return res.json({
+        success: true,
+        url: result.secure_url,
+        publicId: result.public_id,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn("[upload] Cloudinary audio upload error, falling back to local:", err);
+      return res.json({
+        success: true,
+        url: localUrl,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+      });
+    }
+  }
+
+  // Fallback to local static URL
   return res.json({
     success: true,
     url: localUrl,
